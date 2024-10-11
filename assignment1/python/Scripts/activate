@@ -1,5 +1,5 @@
 # This file must be used with "source bin/activate" *from bash*
-# you cannot run it directly
+# You cannot run it directly
 
 deactivate () {
     # reset old environment variables
@@ -38,8 +38,15 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="D:\INES\ESCRITORIO\BigData_assigmnet1"
-export VIRTUAL_ENV
+# on Windows, a path can contain colons and backslashes and has to be converted:
+if [ "$OSTYPE" = "cygwin" ] || [ "$OSTYPE" = "msys" ] ; then
+    # transform D:\path\to\venv to /d/path/to/venv on MSYS
+    # and to /cygdrive/d/path/to/venv on Cygwin
+    export VIRTUAL_ENV=$(cygpath "C:\Users\LUIS\OneDrive\Escritorio\BigData")
+else
+    # use the path as-is
+    export VIRTUAL_ENV="C:\Users\LUIS\OneDrive\Escritorio\BigData"
+fi
 
 _OLD_VIRTUAL_PATH="$PATH"
 PATH="$VIRTUAL_ENV/Scripts:$PATH"
@@ -55,9 +62,9 @@ fi
 
 if [ -z "${VIRTUAL_ENV_DISABLE_PROMPT:-}" ] ; then
     _OLD_VIRTUAL_PS1="${PS1:-}"
-    PS1="(BigData_assigmnet1) ${PS1:-}"
+    PS1="(BigData) ${PS1:-}"
     export PS1
-    VIRTUAL_ENV_PROMPT="(BigData_assigmnet1) "
+    VIRTUAL_ENV_PROMPT="(BigData) "
     export VIRTUAL_ENV_PROMPT
 fi
 

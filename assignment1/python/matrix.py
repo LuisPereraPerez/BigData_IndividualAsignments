@@ -1,6 +1,6 @@
 import random
 
-def matrix_multiplication(n): 
+def matrix_multiply(n):
     A = [[random.random() for _ in range(n)] for _ in range(n)]
     B = [[random.random() for _ in range(n)] for _ in range(n)]
     C = [[0 for _ in range(n)] for _ in range(n)]
@@ -9,5 +9,5 @@ def matrix_multiplication(n):
         for j in range(n):
             for k in range(n):
                 C[i][j] += A[i][k] * B[k][j]
-    
+
     return C
