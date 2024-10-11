@@ -10,7 +10,7 @@ public class MyBenchmark {
 
     @Benchmark
     public double[][] testMatrixMultiply() {
-        int n = 10; // Puedes parametrizar n si lo deseas
+        int n = 1000;
         return MatrixMultiplier.matrixMultiply(n);
     }
 }
