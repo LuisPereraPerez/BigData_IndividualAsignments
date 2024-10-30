@@ -1,0 +1,11 @@
+dontinline,*.*_all_jmhStub
+dontinline,*.*_avgt_jmhStub
+dontinline,*.*_sample_jmhStub
+dontinline,*.*_ss_jmhStub
+dontinline,*.*_thrpt_jmhStub
+inline,org/example/BlockedMatrixBenchmark.setUp
+inline,org/example/BlockedMatrixBenchmark.testBlockedMatrixMultiply
+inline,org/example/SparseMatrixBenchmark.setUp
+inline,org/example/SparseMatrixBenchmark.testSparseMatrixMultiply
+inline,org/example/StrassenMatrixBenchmark.setUp
+inline,org/example/StrassenMatrixBenchmark.testStrassenMatrixMultiply
