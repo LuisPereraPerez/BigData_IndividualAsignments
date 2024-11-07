@@ -24,7 +24,7 @@ public class StrassenMatrixBenchmark {
     @Benchmark
     public double[][] testStrassenMatrixMultiply() {
         // Perform the matrix multiplication with the generated matrices
-        return StrassenMatrixMultiplication.multiply(matrixA, matrixB);
+        return StrassenMatrixMultiplication.multiply(matrixA, matrixB, sparse);
     }
 
     // Method to generate a random matrix based on sparsity settings
