@@ -1,81 +1,97 @@
-package org.example;
+import java.util.HashMap;
+import java.util.Map;
 
-public class StrassenMatrixMultiplication {
-    public static double[][] multiply(double[][] A, double[][] B) {
-        int n = A.length;
+public class StrassenSparseMatrixMultiplication {
+
+    public static Map<String, Double> multiply(Map<String, Double> A, Map<String, Double> B, int n) {
         if (n == 1) {
-            double[][] C = {{A[0][0] * B[0][0]}};
-            return C;
+            String key = "0,0";  // La única posición de la matriz
+            double product = A.getOrDefault(key, 0.0) * B.getOrDefault(key, 0.0);
+            Map<String, Double> result = new HashMap<>();
+            result.put(key, product);
+            return result;
         }
 
         int newSize = n / 2;
-        double[][] A11 = new double[newSize][newSize];
-        double[][] A12 = new double[newSize][newSize];
-        double[][] A21 = new double[newSize][newSize];
-        double[][] A22 = new double[newSize][newSize];
-        double[][] B11 = new double[newSize][newSize];
-        double[][] B12 = new double[newSize][newSize];
-        double[][] B21 = new double[newSize][newSize];
-        double[][] B22 = new double[newSize][newSize];
 
-        split(A, A11, 0, 0);
-        split(A, A12, 0, newSize);
-        split(A, A21, newSize, 0);
-        split(A, A22, newSize, newSize);
-        split(B, B11, 0, 0);
-        split(B, B12, 0, newSize);
-        split(B, B21, newSize, 0);
-        split(B, B22, newSize, newSize);
+        Map<String, Double> A11 = getSubmatrix(A, 0, 0, newSize);
+        Map<String, Double> A12 = getSubmatrix(A, 0, newSize, newSize);
+        Map<String, Double> A21 = getSubmatrix(A, newSize, 0, newSize);
+        Map<String, Double> A22 = getSubmatrix(A, newSize, newSize, newSize);
 
-        double[][] M1 = multiply(add(A11, A22), add(B11, B22));
-        double[][] M2 = multiply(add(A21, A22), B11);
-        double[][] M3 = multiply(A11, subtract(B12, B22));
-        double[][] M4 = multiply(A22, subtract(B21, B11));
-        double[][] M5 = multiply(add(A11, A12), B22);
-        double[][] M6 = multiply(subtract(A21, A11), add(B11, B12));
-        double[][] M7 = multiply(subtract(A12, A22), add(B21, B22));
+        Map<String, Double> B11 = getSubmatrix(B, 0, 0, newSize);
+        Map<String, Double> B12 = getSubmatrix(B, 0, newSize, newSize);
+        Map<String, Double> B21 = getSubmatrix(B, newSize, 0, newSize);
+        Map<String, Double> B22 = getSubmatrix(B, newSize, newSize, newSize);
 
-        double[][] C11 = add(subtract(add(M1, M4), M5), M7);
-        double[][] C12 = add(M3, M5);
-        double[][] C21 = add(M2, M4);
-        double[][] C22 = add(subtract(add(M1, M3), M2), M6);
+        Map<String, Double> M1 = multiply(add(A11, A22, newSize), add(B11, B22, newSize), newSize);
+        Map<String, Double> M2 = multiply(add(A21, A22, newSize), B11, newSize);
+        Map<String, Double> M3 = multiply(A11, subtract(B12, B22, newSize), newSize);
+        Map<String, Double> M4 = multiply(A22, subtract(B21, B11, newSize), newSize);
+        Map<String, Double> M5 = multiply(add(A11, A12, newSize), B22, newSize);
+        Map<String, Double> M6 = multiply(subtract(A21, A11, newSize), add(B11, B12, newSize), newSize);
+        Map<String, Double> M7 = multiply(subtract(A12, A22, newSize), add(B21, B22, newSize), newSize);
 
-        double[][] C = new double[n][n];
-        join(C11, C, 0, 0);
-        join(C12, C, 0, newSize);
-        join(C21, C, newSize, 0);
-        join(C22, C, newSize, newSize);
+        Map<String, Double> C = new HashMap<>();
+        Map<String, Double> C11 = add(subtract(add(M1, M4, newSize), M5, newSize), M7, newSize);
+        Map<String, Double> C12 = add(M3, M5, newSize);
+        Map<String, Double> C21 = add(M2, M4, newSize);
+        Map<String, Double> C22 = add(subtract(add(M1, M3, newSize), M2, newSize), M6, newSize);
+
+        join(C11, C, 0, 0, newSize);
+        join(C12, C, 0, newSize, newSize);
+        join(C21, C, newSize, 0, newSize);
+        join(C22, C, newSize, newSize, newSize);
 
         return C;
     }
 
-    private static void split(double[][] P, double[][] C, int iB, int jB) {
-        for (int i = 0, i2 = iB; i < C.length; i++, i2++)
-            for (int j = 0, j2 = jB; j < C.length; j++, j2++)
-                C[i][j] = P[i2][j2];
+    private static Map<String, Double> getSubmatrix(Map<String, Double> matrix, int startRow, int startCol, int size) {
+        Map<String, Double> submatrix = new HashMap<>();
+        for (int i = startRow; i < startRow + size; i++) {
+            for (int j = startCol; j < startCol + size; j++) {
+                String key = i + "," + j;
+                if (matrix.containsKey(key)) {
+                    submatrix.put(key, matrix.get(key));
+                }
+            }
+        }
+        return submatrix;
     }
 
-    private static void join(double[][] C, double[][] P, int iB, int jB) {
-        for (int i = 0, i2 = iB; i < C.length; i++, i2++)
-            for (int j = 0, j2 = jB; j < C.length; j++, j2++)
-                P[i2][j2] = C[i][j];
+    private static Map<String, Double> add(Map<String, Double> A, Map<String, Double> B, int size) {
+        Map<String, Double> result = new HashMap<>();
+        for (Map.Entry<String, Double> entry : A.entrySet()) {
+            String key = entry.getKey();
+            result.put(key, result.getOrDefault(key, 0.0) + entry.getValue());
+        }
+        for (Map.Entry<String, Double> entry : B.entrySet()) {
+            String key = entry.getKey();
+            result.put(key, result.getOrDefault(key, 0.0) + entry.getValue());
+        }
+        return result;
     }
 
-    private static double[][] add(double[][] A, double[][] B) {
-        int n = A.length;
-        double[][] C = new double[n][n];
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                C[i][j] = A[i][j] + B[i][j];
-        return C;
+    private static Map<String, Double> subtract(Map<String, Double> A, Map<String, Double> B, int size) {
+        Map<String, Double> result = new HashMap<>();
+        for (Map.Entry<String, Double> entry : A.entrySet()) {
+            String key = entry.getKey();
+            result.put(key, result.getOrDefault(key, 0.0) + entry.getValue());
+        }
+        for (Map.Entry<String, Double> entry : B.entrySet()) {
+            String key = entry.getKey();
+            result.put(key, result.getOrDefault(key, 0.0) - entry.getValue());
+        }
+        return result;
     }
 
-    private static double[][] subtract(double[][] A, double[][] B) {
-        int n = A.length;
-        double[][] C = new double[n][n];
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                C[i][j] = A[i][j] - B[i][j];
-        return C;
+    private static void join(Map<String, Double> submatrix, Map<String, Double> matrix, int startRow, int startCol, int size) {
+        for (Map.Entry<String, Double> entry : submatrix.entrySet()) {
+            String key = entry.getKey();
+            String[] parts = key.split(",");
+            int i = Integer.parseInt(parts[0]) + startRow;
+            int j = Integer.parseInt(parts[1]) + startCol;
+            matrix.put(i + "," + j, entry.getValue());
+        }
     }
 }
