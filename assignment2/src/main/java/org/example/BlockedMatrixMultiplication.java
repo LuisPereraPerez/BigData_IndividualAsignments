@@ -12,9 +12,13 @@ public class BlockedMatrixMultiplication {
                         for (int j = jj; j < Math.min(jj + blockSize, n); j++) {
                             double sum = 0;
                             for (int k = kk; k < Math.min(kk + blockSize, n); k++) {
-                                sum += A[i][k] * B[k][j];
+                                if (A[i][k] != 0 && B[k][j] != 0) {
+                                    sum += A[i][k] * B[k][j];
+                                }
                             }
-                            C[i][j] += sum;
+                            if (sum != 0) {
+                                C[i][j] += sum;
+                            }
                         }
                     }
                 }
