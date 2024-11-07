@@ -1,33 +1,31 @@
 package com.example;
 
-import java.util.Random;
-
 public class MatrixMultiplier {
 
-    public static double[][] matrixMultiply(int n) {
-        double[][] a = new double[n][n];
-        double[][] b = new double[n][n];
-        double[][] c = new double[n][n];
+    // Matrix multiplication considering sparse matrices
+    public static double[][] matrixMultiply(double[][] A, double[][] B, boolean sparse) {
+        int n = A.length;
+        double[][] result = new double[n][n];
 
-        Random random = new Random();
+        // Matrix multiplication with sparsity consideration
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                a[i][j] = random.nextDouble();
-                b[i][j] = random.nextDouble();
-                c[i][j] = 0;
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (a[i][j] != 0) {  // Solo multiplicar si a[i][j] no es cero
-                    for (int k = 0; k < n; k++) {
-                        if (b[j][k] != 0) {
-                            c[i][k] += a[i][j] * b[j][k];
+                double sum = 0;
+                for (int k = 0; k < n; k++) {
+                    // For sparse matrices, skip multiplication if A[i][k] or B[k][j] is zero
+                    if (sparse) {
+                        if (A[i][k] != 0 && B[k][j] != 0) {
+                            sum += A[i][k] * B[k][j];
                         }
+                    } else {
+                        // For dense matrices, just multiply normally
+                        sum += A[i][k] * B[k][j];
                     }
                 }
+                result[i][j] = sum;
             }
         }
-        return c;
+
+        return result;
     }
 }
