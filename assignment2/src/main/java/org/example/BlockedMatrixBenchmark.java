@@ -25,7 +25,7 @@ public class BlockedMatrixBenchmark {
 
     @Benchmark
     public double[][] testBlockedMatrixMultiply() {
-        return BlockedMatrixMultiplication.multiply(matrixA, matrixB);
+        return BlockedMatrixMultiplication.multiply(matrixA, matrixB, sparse);
     }
 
     // Method to generate a random matrix
