@@ -1,0 +1,4 @@
+package com.example.jmh_generated;
+public class MultiplyWithLoopUnrollingBenchmark_jmhType extends MultiplyWithLoopUnrollingBenchmark_jmhType_B3 {
+}
+

@@ -3,9 +3,9 @@ dontinline,*.*_avgt_jmhStub
 dontinline,*.*_sample_jmhStub
 dontinline,*.*_ss_jmhStub
 dontinline,*.*_thrpt_jmhStub
-inline,org/example/BlockedMatrixBenchmark.setUp
-inline,org/example/BlockedMatrixBenchmark.testBlockedMatrixMultiply
-inline,org/example/SparseMatrixBenchmark.setUp
-inline,org/example/SparseMatrixBenchmark.testSparseMatrixMultiply
-inline,org/example/StrassenMatrixBenchmark.setUp
-inline,org/example/StrassenMatrixBenchmark.testStrassenMatrixMultiply
+inline,com/example/BlockedMatrixBenchmark.setUp
+inline,com/example/BlockedMatrixBenchmark.testBlockedMatrixMultiply
+inline,com/example/MatrixMultiplierBenchmark.setUp
+inline,com/example/MatrixMultiplierBenchmark.testMatrixMultiply
+inline,com/example/MultiplyWithLoopUnrollingBenchmark.setUp
+inline,com/example/MultiplyWithLoopUnrollingBenchmark.testBlockedMatrixMultiply
