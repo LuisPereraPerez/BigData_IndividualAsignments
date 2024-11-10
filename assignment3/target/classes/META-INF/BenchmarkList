@@ -1,0 +1,2 @@
+JMH S 41 org.example.MatrixMultiplicationBenchmark S 90 org.example.jmh_generated.MatrixMultiplicationBenchmark_testParallelMatrixMultiply_jmhTest S 26 testParallelMatrixMultiply S 11 AverageTime E A 1 1 1 E E E E E E E E E E E E E E U 12 MILLISECONDS E E 
+JMH S 41 org.example.MatrixMultiplicationBenchmark S 92 org.example.jmh_generated.MatrixMultiplicationBenchmark_testSequentialMatrixMultiply_jmhTest S 28 testSequentialMatrixMultiply S 11 AverageTime E A 1 1 1 E E E E E E E E E E E E E E U 12 MILLISECONDS E E 
