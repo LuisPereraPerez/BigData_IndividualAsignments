@@ -15,48 +15,72 @@ import java.util.concurrent.Future;
 public class DistributedMatrixMultiplication {
 
     public static void main(String[] args) throws Exception {
-        // Create or join a Hazelcast cluster
+        // Crear o unirse a un clúster Hazelcast
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
 
-        waitForCluster(hazelcastInstance, 3);
+        waitForCluster(hazelcastInstance, 3); // Esperar hasta que el clúster tenga 3 nodos
 
-        int[][] matrixA = generateMatrix(3);
-        int[][] matrixB = generateMatrix(3);
+        // Solo el primer nodo genera y distribuye las matrices
+        if (hazelcastInstance.getCluster().getLocalMember().getUuid().equals(hazelcastInstance.getCluster().getMembers().iterator().next().getUuid())) {
+            // Generamos las matrices solo en el nodo principal
+            int[][] matrixA = generateMatrix(3);
+            int[][] matrixB = generateMatrix(3);
 
-        System.out.println("Matrix A:");
-        printMatrix(matrixA);
+            System.out.println("Matrix A:");
+            printMatrix(matrixA);
 
-        System.out.println("Matrix B:");
-        printMatrix(matrixB);
+            System.out.println("Matrix B:");
+            printMatrix(matrixB);
 
-        int[][] result = multiplyMatricesDistributed(hazelcastInstance, matrixA, matrixB);
+            // Almacena las matrices en el mapa distribuido
+            storeMatricesInHazelcast(hazelcastInstance, matrixA, matrixB);
+        }
+
+        // Realizar la multiplicación distribuida
+        int[][] result = multiplyMatricesDistributed(hazelcastInstance);
 
         System.out.println("Resultant Matrix:");
         printMatrix(result);
 
-        hazelcastInstance.shutdown();
+        // Asegúrate de que todas las tareas han terminado antes de apagar Hazelcast
+        hazelcastInstance.getLifecycleService().terminate(); // Terminar las operaciones de Hazelcast adecuadamente
     }
 
-    private static int[][] multiplyMatricesDistributed(HazelcastInstance hazelcastInstance, int[][] matrixA, int[][] matrixB) throws Exception {
+    private static void storeMatricesInHazelcast(HazelcastInstance hazelcastInstance, int[][] matrixA, int[][] matrixB) {
+        // Obtiene el mapa distribuido para las matrices
+        IMap<String, int[][]> map = hazelcastInstance.getMap("matrices");
+
+        // Almacena las matrices A y B en el mapa
+        map.put("matrixA", matrixA);
+        map.put("matrixB", matrixB);
+    }
+
+    private static int[][] multiplyMatricesDistributed(HazelcastInstance hazelcastInstance) throws Exception {
+        IMap<String, int[][]> map = hazelcastInstance.getMap("matrices");
+
+        // Obtener las matrices A y B desde el mapa distribuido
+        int[][] matrixA = map.get("matrixA");
+        int[][] matrixB = map.get("matrixB");
+
         int size = matrixA.length;
         int[][] result = new int[size][size];
 
-        // Transpose matrix B for easier column access
+        // Transponer la matriz B para facilitar el acceso a las columnas
         int[][] transposedB = transposeMatrix(matrixB);
 
-        // Use Hazelcast ExecutorService for distributed computation
+        // Usar Hazelcast ExecutorService para el cálculo distribuido
         IExecutorService executorService = hazelcastInstance.getExecutorService("matrixMultiplication");
 
         List<Future<int[]>> futures = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            // Create a task for each row of matrixA
+            // Crear una tarea para cada fila de la matriz A
             MatrixMultiplicationTask task = new MatrixMultiplicationTask(matrixA[i], transposedB);
             futures.add(executorService.submit(task));
         }
 
-        // Collect the results
+        // Esperar que todas las tareas terminen antes de continuar
         for (int i = 0; i < size; i++) {
-            result[i] = futures.get(i).get();
+            result[i] = futures.get(i).get();  // Esperar el resultado de cada tarea
         }
 
         return result;
